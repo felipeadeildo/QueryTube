@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "back"
+version = "0.1.0"
+description = ""
+authors = ["Felipe Adeildo <contato@felipeadeildo.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.115.6"
+prisma = "^0.15.0"
+langchain = "^0.3.11"
+ruff = "^0.8.2"
+langchain-huggingface = "^0.1.2"
+uvicorn = "^0.32.1"
+isort = "^5.13.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+line_length = 88
+known_first_party = ["back"]
