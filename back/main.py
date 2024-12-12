@@ -2,7 +2,7 @@ import importlib
 
 from fastapi import FastAPI
 
-from .startup import lifespan
+from startup import lifespan
 
 app = FastAPI(lifespan=lifespan)
 
