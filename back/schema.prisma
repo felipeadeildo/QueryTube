@@ -1,0 +1,30 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider             = "prisma-client-py"
+  interface            = "sync"
+  recursive_type_depth = 5
+}
+
+model Source {
+  id        String         @id @default(cuid())
+  provider  SourceProvider
+  contenId  String
+  status    SourceStatus
+  metadata  Json
+  createdAt DateTime       @default(now())
+}
+
+enum SourceProvider {
+  youtube
+}
+
+enum SourceStatus {
+  pending
+  processing
+  done
+  error
+}
