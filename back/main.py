@@ -2,7 +2,9 @@ import importlib
 
 from fastapi import FastAPI
 
-app = FastAPI()
+from .startup import lifespan
+
+app = FastAPI(lifespan=lifespan)
 
 
 routers = ["source"]
