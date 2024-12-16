@@ -17,3 +17,4 @@ RUN poetry config virtualenvs.create false && poetry install --no-root --no-inte
 
 COPY . /app
 
+ENV ES_HOST=http://elasticsearch:9200
