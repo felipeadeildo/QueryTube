@@ -1,16 +1,23 @@
-import { createSource, readSource } from '@/services/source'
+import { createSources, readSources } from '@/services/source'
 import { SourceProvider } from '@/types/source'
 import { useMutation, useQuery } from '@tanstack/react-query'
 
-export const useCreateSource = () => {
+export const useCreateSources = () => {
   return useMutation({
-    mutationFn: createSource
+    mutationFn: createSources,
   })
 }
 
-export const useReadSource = (contentId: string, provider: SourceProvider) => {
+export const useReadSources = (
+  contentIds: string[],
+  providers: SourceProvider[]
+) => {
   return useQuery({
-    queryKey: ['source', contentId, provider],
-    queryFn: () => readSource(contentId, provider)
+    queryKey: ['sources', contentIds, providers],
+    queryFn: () => readSources(contentIds, providers),
+    enabled:
+      contentIds.length > 0 &&
+      providers.length > 0 &&
+      contentIds.length === providers.length,
   })
 }
