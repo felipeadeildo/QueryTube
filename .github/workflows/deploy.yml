@@ -7,19 +7,31 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      DEFAULT_SSH_PORT: 22
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@v0.1.10
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          SERVER_PROJECT_PATH: ${{ secrets.SERVER_PROJECT_PATH }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          port: ${{ secrets.SSH_PORT || 22 }}
+          port: ${{ secrets.SSH_PORT || env.DEFAULT_SSH_PORT }}
+          envs: SERVER_PROJECT_PATH
           script: |
-            cd ${{ secrets.SERVER_PROJECT_PATH }}
+            if [ -z "$SERVER_PROJECT_PATH" ]; then
+              echo "Variável de ambiente SERVER_PROJECT_PATH não está definida."
+              exit 1
+            fi
+
+            cd "$SERVER_PROJECT_PATH"
             git pull
             docker compose down
             docker compose up -d --build
