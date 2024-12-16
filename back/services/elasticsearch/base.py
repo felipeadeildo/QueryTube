@@ -1,9 +1,9 @@
 from typing import Generic, Optional, TypeVar
 
-from elasticsearch import Elasticsearch
+from models.elasticsearch import BaseIndexItem
 from pydantic import BaseModel
 
-from models.elasticsearch import BaseIndexItem
+from elasticsearch import Elasticsearch
 
 OUT = TypeVar("OUT", bound=BaseIndexItem)
 IN = TypeVar("IN", bound=BaseModel)
@@ -66,4 +66,4 @@ class ElasticsearchIndex(Generic[IN, OUT]):
 
 
 def get_es_instance() -> Elasticsearch:
-    return Elasticsearch(["localhost:9200"])
+    return Elasticsearch(["http://localhost:9200"])
