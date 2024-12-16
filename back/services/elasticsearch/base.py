@@ -1,4 +1,4 @@
-from typing import Generic, Optional, TypeVar
+from typing import Generic, Optional, TypeVar, Union
 
 from elasticsearch import Elasticsearch
 from pydantic import BaseModel
@@ -8,9 +8,10 @@ from models.elasticsearch import BaseIndexItem
 
 OUT = TypeVar("OUT", bound=BaseIndexItem)
 IN = TypeVar("IN", bound=BaseModel)
+IN_MODIFIER = TypeVar("IN_MODIFIER", bound=BaseModel, default=IN)
 
 
-class ElasticsearchIndex(Generic[IN, OUT]):
+class ElasticsearchIndex(Generic[IN, OUT, IN_MODIFIER]):
     def __init__(self, client: Elasticsearch):
         self.client = client
         self.index_name = self.get_index_name()
@@ -27,16 +28,21 @@ class ElasticsearchIndex(Generic[IN, OUT]):
     def get_model(self) -> type[OUT]:
         raise NotImplementedError("get_model must be implemented")
 
+    def modify_input(self, obj: IN) -> Union[IN, IN_MODIFIER]:
+        """Override this method to apply modifications or add default values."""
+        return obj
+
     def check_or_create_index(self):
         if not self.client.indices.exists(index=self.index_name):
             self.client.indices.create(index=self.index_name, mappings=self.mapping)
 
-    def create(self, obj: IN) -> OUT:
-        res = self.client.index(index=self.index_name, document=obj.model_dump())
+    def create(self, obj: IN) -> Optional[OUT]:
+        modified_obj = self.modify_input(obj)
+        res = self.client.index(
+            index=self.index_name, document=modified_obj.model_dump(), refresh=True
+        )
 
-        data = {"id": res["_id"], **res["_source"]}
-
-        return self.model.model_validate(data)
+        return self.read(res["_id"])
 
     def read(self, id: str) -> Optional[OUT]:
         res = self.client.get(index=self.index_name, id=id)

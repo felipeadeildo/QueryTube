@@ -1,11 +1,17 @@
 from typing import Optional
 
-from models.source import Source, SourceIn, SourceProvider, SourceStatus
+from models.source import (
+    Source,
+    SourceIn,
+    SourceInModifier,
+    SourceProvider,
+    SourceStatus,
+)
 
 from .base import ElasticsearchIndex
 
 
-class ElasticsearchSource(ElasticsearchIndex[SourceIn, Source]):
+class ElasticsearchSource(ElasticsearchIndex[SourceIn, Source, SourceInModifier]):
     def get_index_name(self) -> str:
         return "sources"
 
@@ -22,6 +28,10 @@ class ElasticsearchSource(ElasticsearchIndex[SourceIn, Source]):
 
     def get_model(self) -> type[Source]:
         return Source
+
+    def modify_input(self, obj: SourceIn) -> SourceInModifier:
+        print(obj.model_dump())
+        return SourceInModifier.model_validate(obj, from_attributes=True)
 
     def update_status(self, id: str, status: SourceStatus) -> Optional[Source]:
         source = self.read(id)

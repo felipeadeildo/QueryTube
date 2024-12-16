@@ -2,9 +2,9 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
-from .elasticsearch import BaseIndexItem
+from models.elasticsearch import BaseIndexItem
 
 
 class SourceProvider(str, Enum):
@@ -19,15 +19,21 @@ class SourceStatus(str, Enum):
 
 
 class SourceBase(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     provider: SourceProvider
-    content_id: str = Field(..., alias="contentId")
+    content_id: str = Field(alias="contentId")
 
 
 class SourceIn(SourceBase):
     metadata: Optional[dict] = Field(default_factory=dict)
 
 
-class Source(SourceBase, BaseIndexItem):
+class SourceInModifier(SourceBase):
     status: SourceStatus = SourceStatus.PENDING
-    metadata: dict
+    metadata: dict = Field(default_factory=dict)
     created_at: datetime = Field(default_factory=datetime.now)
+
+
+class Source(SourceInModifier, BaseIndexItem):
+    pass
