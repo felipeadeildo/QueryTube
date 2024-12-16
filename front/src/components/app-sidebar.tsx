@@ -1,3 +1,4 @@
+import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Sidebar,
   SidebarContent,
@@ -18,15 +19,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { useHistory } from '@/contexts/history'
 import { cn } from '@/lib/utils'
-import {
-  HelpCircle,
-  Home,
-  Key,
-  MessageSquare,
-  Play,
-  Settings,
-} from 'lucide-react'
+import { HelpCircle, Home, Key, MessageSquare, Settings } from 'lucide-react'
 import { NavLink } from 'react-router'
 
 const menuItems = [
@@ -38,16 +33,6 @@ const menuItems = [
         icon: Home,
         path: '/',
         end: true,
-      },
-      {
-        title: 'Video Analysis',
-        icon: Play,
-        path: '/analysis',
-      },
-      {
-        title: 'Chat History',
-        icon: MessageSquare,
-        path: '/history',
       },
     ],
   },
@@ -92,6 +77,7 @@ const CustomTooltip = ({
 
 export const AppSidebar = () => {
   const { open } = useSidebar()
+  const { history } = useHistory()
 
   return (
     <Sidebar collapsible="icon">
@@ -114,6 +100,7 @@ export const AppSidebar = () => {
       </SidebarHeader>
 
       <SidebarContent>
+        {/* Static Menu Items */}
         {menuItems.map((group) => (
           <SidebarGroup key={group.label}>
             <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
@@ -125,7 +112,6 @@ export const AppSidebar = () => {
                       <SidebarMenuButton asChild>
                         <NavLink
                           to={item.path}
-                          end={item.end}
                           className={({ isActive }) =>
                             cn(
                               'w-full flex items-center gap-2 px-3 py-2',
@@ -144,6 +130,39 @@ export const AppSidebar = () => {
             </SidebarGroupContent>
           </SidebarGroup>
         ))}
+
+        {/* Dynamic History Items */}
+        {history.length > 0 && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Recent Chats</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <ScrollArea className="h-[300px]">
+                <SidebarMenu>
+                  {history.map((chat) => (
+                    <SidebarMenuItem key={chat.id}>
+                      <CustomTooltip content={chat.name}>
+                        <SidebarMenuButton asChild>
+                          <NavLink
+                            to={`/chat/${chat.id}`}
+                            className={({ isActive }) =>
+                              cn(
+                                'w-full flex items-center gap-2 px-3 py-2 text-sm truncate',
+                                isActive && 'text-primary font-medium'
+                              )
+                            }
+                          >
+                            <MessageSquare className="h-4 w-4 shrink-0" />
+                            <span className="truncate">{chat.name}</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </CustomTooltip>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </ScrollArea>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter className="border-t p-2">

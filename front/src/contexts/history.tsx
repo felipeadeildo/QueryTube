@@ -1,16 +1,19 @@
 import { SourceIn } from '@/types/source'
 import React, { createContext, useContext, useEffect, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
 interface HistoryItem {
+  id: string
   name: string
   sources: SourceIn[]
+  createdAt: Date
 }
 
 interface HistoryContextType {
   history: HistoryItem[]
-  addToHistory: (item: HistoryItem) => void
-  removeFromHistory: (name: string) => void
-  getHistoryItem: (name: string) => HistoryItem | undefined
+  addToHistory: (name: string, sources: SourceIn[]) => void
+  removeFromHistory: (id: string) => void
+  getHistoryItem: (id: string) => HistoryItem | undefined
 }
 
 const HistoryContext = createContext<HistoryContextType | undefined>(undefined)
@@ -30,26 +33,28 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(history))
   }, [history])
 
-  const addToHistory = (item: HistoryItem) => {
-    setHistory((prev) => [item, ...prev])
+  const addToHistory = (name: string, sources: SourceIn[]) => {
+    const newItem: HistoryItem = {
+      id: uuidv4(),
+      name,
+      sources,
+      createdAt: new Date(),
+    }
+    setHistory((prev) => [newItem, ...prev])
+    return newItem.id
   }
 
-  const removeFromHistory = (name: string) => {
-    setHistory((prev) => prev.filter((item) => item.name !== name))
+  const removeFromHistory = (id: string) => {
+    setHistory((prev) => prev.filter((item) => item.id !== id))
   }
 
-  const getHistoryItem = (name: string) => {
-    return history.find((item) => item.name === name)
+  const getHistoryItem = (id: string) => {
+    return history.find((item) => item.id === id)
   }
 
   return (
     <HistoryContext.Provider
-      value={{
-        history,
-        addToHistory,
-        removeFromHistory,
-        getHistoryItem,
-      }}
+      value={{ history, addToHistory, removeFromHistory, getHistoryItem }}
     >
       {children}
     </HistoryContext.Provider>

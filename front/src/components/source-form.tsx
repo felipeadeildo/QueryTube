@@ -94,13 +94,16 @@ export function SourceForm() {
 
       await createSources(validSources)
 
-      const historyItem = {
-        name: new Date().toISOString(),
-        sources: validSources,
-      }
+      // Gerar um nome mais descritivo baseado na quantidade de vídeos
+      const historyName = `Analysis of ${validSources.length} video${
+        validSources.length !== 1 ? 's' : ''
+      }`
 
-      addToHistory(historyItem)
-      navigate(`/chat/${historyItem.name}`)
+      // Usar a nova versão do addToHistory que retorna o ID
+      const historyId = addToHistory(historyName, validSources)
+
+      // Navegar usando o ID retornado
+      navigate(`/chat/${historyId}`)
     } catch (error) {
       console.error('Error creating sources:', error)
     }
