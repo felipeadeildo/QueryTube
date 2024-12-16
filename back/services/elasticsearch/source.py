@@ -11,14 +11,12 @@ class ElasticsearchSource(ElasticsearchIndex[SourceIn, Source]):
 
     def get_mapping(self) -> dict:
         return {
-            "mappings": {
-                "properties": {
-                    "provider": {"type": "keyword"},
-                    "content_id": {"type": "keyword"},
-                    "metadata": {"type": "object"},
-                    "status": {"type": "keyword"},
-                    "created_at": {"type": "date"},
-                }
+            "properties": {
+                "provider": {"type": "keyword"},
+                "content_id": {"type": "keyword"},
+                "metadata": {"type": "object"},
+                "status": {"type": "keyword"},
+                "created_at": {"type": "date"},
             }
         }
 
