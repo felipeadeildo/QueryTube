@@ -11,8 +11,13 @@ import { SourceProvider } from '@/types/source'
  */
 const extractYouTubeVideoId = (url: string): string => {
   try {
-    // Remove any leading/trailing whitespace and convert to lowercase
-    const sanitizedUrl = url.trim().toLowerCase()
+    // Remove any leading/trailing whitespace and attempt to normalize the URL
+    let sanitizedUrl = url.trim()
+
+    // Add protocol if missing
+    if (!sanitizedUrl.startsWith('http')) {
+      sanitizedUrl = 'https://' + sanitizedUrl
+    }
 
     // Handle youtu.be format
     if (sanitizedUrl.includes('youtu.be/')) {
@@ -31,8 +36,8 @@ const extractYouTubeVideoId = (url: string): string => {
       }
 
       // Handle standard watch URLs
-      const urlParams = new URL(sanitizedUrl).searchParams
-      const id = urlParams.get('v')
+      const urlObj = new URL(sanitizedUrl)
+      const id = urlObj.searchParams.get('v')
       if (!id) throw new Error('Invalid YouTube URL format')
       return id
     }
@@ -43,8 +48,11 @@ const extractYouTubeVideoId = (url: string): string => {
     }
 
     throw new Error('Unsupported YouTube URL format')
-  } catch (error) {
-    throw new Error(`Failed to extract YouTube video ID: ${error}`)
+  } catch {
+    // Em caso de erro, retorna uma string vazia ou um valor padrão
+    // Isso evita que o componente quebre
+    console.warn(`Warning: Invalid YouTube URL - ${url}`)
+    return ''
   }
 }
 
