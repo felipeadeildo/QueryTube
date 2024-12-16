@@ -20,7 +20,7 @@ class SourceStatus(str, Enum):
 
 class SourceBase(BaseModel):
     provider: SourceProvider
-    content_id: str
+    content_id: str = Field(..., alias="contentId")
 
 
 class SourceIn(SourceBase):
