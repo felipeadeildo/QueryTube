@@ -1,5 +1,6 @@
-from dependencies import ESSourceDep
 from fastapi import APIRouter, HTTPException
+
+from dependencies import ESSourceDep
 from models.source import Source, SourceIn, SourceProvider
 
 router = APIRouter(tags=["Source Manager"])
