@@ -21,6 +21,7 @@
     "axios": "^1.7.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "emblor": "^1.4.7",
     "lucide-react": "^0.468.0",
     "motion": "^11.14.4",
     "react": "^18.3.1",
@@ -28,6 +29,7 @@
     "react-hook-form": "^7.54.1",
     "react-router": "^7.0.2",
     "tailwind-merge": "^2.5.5",
+    "tailwind-scrollbar": "^3.1.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.24.1"
   },
